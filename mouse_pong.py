@@ -1,5 +1,5 @@
 from pylsl import pylsl, StreamInfo, StreamInlet, StreamOutlet, resolve_stream, LostError
-
+import math
 def main():
     print("creating mouse response stream...")
     info = StreamInfo(name='mouse_response', 
@@ -26,7 +26,8 @@ def main():
             if timestamp is not None:
                 print(f"Received Mouse with timestamp: {timestamp} and coordinates: {mouse_coord}")
                 # Sending it back to Labvanced as int64
-                outlet.push_sample([int(mouse_coord[0]), int(mouse_coord[1])])
+                if not (math.isnan(mouse_coord[0]) or math.isnan(mouse_coord[1])):
+                    outlet.push_sample([int(mouse_coord[0]), int(mouse_coord[1])])
         except LostError:
             print("Lost connection to Labvanced. Exiting...")
             break
